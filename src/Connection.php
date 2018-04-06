@@ -1,20 +1,14 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 
 namespace CommentApp;
 
 
 use PDO;
-/**
- * Description of Connection
- *
- * @author mrcake
- */
+
+use CommentApp\Exceptions\ConfigException;
+use PDOException;
+
 class Connection {
     
     private $pdo;
@@ -22,7 +16,11 @@ class Connection {
     public function __construct(Config $config) {
         list($host, $dbName, $uname, $upass) = $config->getMysqlScope();
         $dsn = sprintf('mysql:host=%s;dbname=%s', $host, $dbName);
-        $this->pdo = new PDO($dsn , $uname, $upass);
+        try{
+            $this->pdo = new PDO($dsn , $uname, $upass);
+        } catch (PDOException $e) {
+            throw new ConfigException("Configuration config", 0, $e);
+        }
     }
     
     public function query($query)

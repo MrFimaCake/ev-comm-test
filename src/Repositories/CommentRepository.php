@@ -1,27 +1,27 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 namespace CommentApp\Repositories;
 
 use CommentApp\Models\User;
 use CommentApp\Models\Comment;
 use CommentApp\Models\CommentSource;
 use CommentApp\EventManager;
+
 /**
- * Description of CommentRepository
- *
- * @author mrcake
+ * @property string $table
  */
 class CommentRepository extends AbstractRepository {
-    //put your code here
+    
     private $table = 'comments';
     
-    public function save(string $commentBody, User $user, CommentSource $commentSource)
+    /**
+     * 
+     * @param string $commentBody
+     * @param User $user
+     * @param CommentSource $commentSource
+     * @return boolean
+     */
+    public function create(string $commentBody, User $user, CommentSource $commentSource)
     {
         $comment = Comment::fromArray(['body' => $commentBody]);
         EventManager::triggerEvent('onSave', $comment);
@@ -79,7 +79,12 @@ class CommentRepository extends AbstractRepository {
             $rows = (array)$statement->fetchAll(\PDO::FETCH_ASSOC);
             
             foreach ($rows as $k => $row) {
-                $comment = Comment::fromArray($row);
+                $comment = Comment::fromArray([
+                    'id'         => $row['id'],
+                    'user_id'    => $row['id'],
+                    'body'       => $row['body'],
+                    'created_at' => $row['created_at'],
+                ]);
                 $commentAuthor = User::fromArray([
                     'id'         => $row['user__id'],
                     'username'   => $row['user__username'],

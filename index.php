@@ -1,7 +1,5 @@
 <?php
 
-ini_set("display_errors", 1);
-
 require_once __DIR__ . '/vendor/autoload.php';
 
 $app = new CommentApp\Application(
@@ -9,5 +7,4 @@ $app = new CommentApp\Application(
 );
 
 $response = $app->createResponse(CommentApp\Request::create());
-
 $response->send();

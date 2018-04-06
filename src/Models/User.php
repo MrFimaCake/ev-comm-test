@@ -8,11 +8,13 @@
 
 namespace CommentApp\Models;
 
-use CommentApp\EventManager;
 /**
- * Description of User
- *
- * @author mrcake
+ * User-corresponding model
+ * 
+ * @property int $id
+ * @property string $username
+ * @property string $user_hash
+ * @property string $created_at string representation of date and time creation
  */
 class User extends Model{
     
@@ -20,7 +22,6 @@ class User extends Model{
     protected $username;
     protected $user_hash;
     protected $created_at;
-    
     
     public function __toString() {
         return $this->getAttribute('username');
@@ -32,13 +33,8 @@ class User extends Model{
         $this->setAttribute('username', $username);
     }
     
-    public function attributes() :array
+    public static function attributes() :array
     {
         return ['id', 'username', 'user_hash', 'created_at'];
-    }
-    
-    public function setIsExists(bool $exists)
-    {
-        $this->exists = $exists;
     }
 }

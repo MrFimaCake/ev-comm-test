@@ -1,17 +1,9 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 namespace CommentApp\Actions;
 
 /**
- * Description of LogoutAction
- *
- * @author mrcake
+ * Clean user cookies and logout
  */
 class LogoutAction extends AbstractAction{
     //put your code here

@@ -28,32 +28,42 @@ class ObserverRepository extends AbstractRepository{
         $this->connection->exec("DELETE FROM `{$this->table}`;");
     }
     
+    /**
+     * @return type
+     */
     public function getAll()
     {
         $statement = $this->connection->prepare(
-            "SELECT `id`, `key`, `priority` FROM `{$this->table}`;"
+            "SELECT `id`, `observer_key` FROM `{$this->table}`;"
         );
         
-        if ($statement->execute() ) {
+        if ($statement->execute()) {
             return $statement->fetchAll();
         }
         
         return [];
     }
     
-    public function saveList($list)
+    /**
+     * Write each observer in db
+     * @param array $list
+     */
+    public function saveList(array $list)
     {
         $statement = $this->connection->prepare(
-            "INSERT INTO {$this->table} (`key`, `priority`, `created_at`)"
-            . " VALUES (:key, :priority, :created_at)"
+            "INSERT INTO {$this->table} (`observer_key`, `created_at`)"
+            . " VALUES (:key, :created_at)"
         );
             
         foreach ($list as $row) {
-            $statement->execute([
-                ':key'        => $row['key'],
-                ':priority'   => $row['priority'],
+            $res = $statement->execute([
+                ':key'        => $row,
                 ':created_at' => (new \DateTime("now"))->format('Y-m-d H:m:i'),
             ]);
+            if (!$res) {
+                $err = $this->connection->errorInfo();
+                echo end($err), "\n";
+            }
         }
     }
 }

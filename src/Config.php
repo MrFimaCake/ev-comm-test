@@ -9,6 +9,8 @@
 namespace CommentApp;
 
 use Dotenv\Dotenv;
+use CommentApp\Exceptions\ConfigException;
+use Dotenv\Exception\InvalidPathException;
 
 /**
  * Description of Config
@@ -16,27 +18,40 @@ use Dotenv\Dotenv;
  * @author mrcake
  */
 class Config {
-    //put your code here
     private $observers;
     private $routes;
     private $root;
     private $repoReference;
-//    private $dsnScope;
     
     public function __construct(string $rootDir) {
         if (!file_exists($rootDir) || !is_dir($rootDir)) {
             throw new ConfigException("Not valid path");
         }
         
-        $dotenv = new Dotenv($rootDir);
-        $dotenv->load();
+        try{
+            
+            $dotenv = new Dotenv($rootDir);
+            $dotenv->load();
+
+            $this->root = $rootDir;
+
+            $this->loadRepoConfig();
+            $this->loadRouteConfig();
+            
+        } catch (InvalidPathException $e) {
+            throw new ConfigException(
+                "Cannot get .env file. Check installation requirements",
+                0,
+                $e
+            );
+        }
         
-        $this->root = $rootDir;
-        
-        $this->loadRepoConfig();
-        $this->loadRouteConfig();
     }
     
+    /**
+     * 
+     * @return type
+     */
     public function getMysqlScope()
     {
         return [
@@ -65,22 +80,21 @@ class Config {
         $this->routes = require $routeConfigPath;
     }
     
+    /**
+     * List of route config
+     * 
+     * @return array
+     */
     public function getRoutes()
     {
         return $this->routes;
     }
     
-    public function getObservers()
-    {
-        $observerListPath = $this->root 
-            . DIRECTORY_SEPARATOR
-            . 'config'
-            . DIRECTORY_SEPARATOR
-            . 'default_observers.php';
-        
-        return $this->observers = require $observerListPath;
-    }
-    
+    /**
+     * Observer config
+     *
+     * @return type
+     */
     public function getObserverReference()
     {
         $observerListPath = $this->root 

@@ -4,6 +4,9 @@ namespace CommentApp\Actions;
 
 use CommentApp\Models\Comment;
 
+/**
+ * Action for rendering list of comments
+ */
 class CommentListAction extends AbstractAction{
     
     public function run()

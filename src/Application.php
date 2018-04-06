@@ -8,11 +8,9 @@
 
 namespace CommentApp;
 
-/**
- * Description of Application
- *
- * @author mrcake
- */
+use CommentApp\Exceptions\CommentAppException;
+use CommentApp\Exceptions\NotFoundException;
+
 class Application {
 
     private $action;
@@ -28,24 +26,43 @@ class Application {
         $this->connection = new Connection($this->config);
         
         EventManager::initEventManager($this);
+        EventManager::triggerEvent('initApp', $this);
     }
     
+    /**
+     * @param \CommentApp\Request $request
+     * @return \CommentApp\Response
+     */
     public function createResponse(Request $request) : Response
     {
         $response = new Response($this);
-        $this->response = $response;
-        $this->request = $request;
-        
-        
-        EventManager::triggerEvent('onRequestInit', $request);
-        EventManager::triggerEvent('initApp', $this);
-        
-        $router = new Router($this);
-        $router->processRequest($request, $response);
+        try {
+            $this->response = $response;
+            $this->request = $request;
+
+            EventManager::triggerEvent('onRequestInit', $request);
+
+            $router = new Router($this);
+            $found = $router->processRequest($request, $response);
+
+            if ($found === false) {
+                throw new NotFoundException("Action ot found", 404);
+            }
+        } catch (CommentAppException $e) {
+            if ($e->getCode() === 404) {
+                http_response_code(404);
+            }
+            $response->setView('error.php', ['errorMessage' => $e->getMessage()]);
+        } finally {
                 
-        return $response;
+            return $response;
+        }
     }
     
+    /**
+     * @param string $subject class name of model
+     * @return mixed
+     */
     public function getRepo($subject)
     {
         $subjectKey = is_object($subject) ? get_class($subject) : $subject;
@@ -57,16 +74,25 @@ class Application {
         return false;
     }
     
+    /**
+     * @return \CommentApp\Config
+     */
     public function getConnection()
     {
         return $this->connection;
     }
     
+    /**
+     * @return \CommentApp\Config
+     */
     public function getConfig()
     {
         return $this->config;
     }
     
+    /**
+     * @return \CommentApp\Models\User
+     */
     public function getUser()
     {
         return $this->request->getUser();

@@ -38,20 +38,9 @@ class Router {
             }
             
             if (!$request->matchUser($rule['authOnly'] ?? false)) {
-//                echo '<pre>';die(var_dump(
-//                    __METHOD__, 
-//                    $rule['authOnly'] ?? false,
-//                    $rule,
-//                    $request->getIsUserGuest(),
-//                    $request->getUser(),
-//                    __LINE__//, 
-//        //            $request->getIsUserGuest(), 
-//        //            $request->getUser() 
-//                ));
                 continue;
             }
             
-            $response->setFound(true);
             $action = $rule['action'];
             
             $this->app->setAction($action);
@@ -60,16 +49,6 @@ class Router {
             return;
         }
         
-        echo '<pre>';die(var_dump(
-            __METHOD__, 
-            __LINE__//, 
-//            $request->getIsUserGuest(), 
-//            $request->getUser() 
-        ));
-        
-        
-        $response->addRedirect('/');
-        $response->send();
-        
+        return false;
     }
 }

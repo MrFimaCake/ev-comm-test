@@ -11,12 +11,16 @@ namespace CommentApp\Observers;
 use CommentApp\Models\Model;
 use CommentApp\Event;
 /**
- * Description of DateTimeObserver
- *
- * @author mrcake
+ * Called for child-classes of CommentApp\Models\Model
  */
 class DateTimeObserver {
     
+    /**
+     * Set `created_at` and `updated_at` fields (like Timestamp behavior)
+     * 
+     * @param Event $event
+     * @return type
+     */
     public function onSave(Event $event)
     {
         $model = $event->getSubject();

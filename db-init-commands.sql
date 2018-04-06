@@ -1,4 +1,8 @@
+
+DROP TABLE IF EXISTS `observers`;
+DROP TABLE IF EXISTS `comments`;
 DROP TABLE IF EXISTS `users`;
+DROP TABLE IF EXISTS `comment_sources`;
 
 CREATE TABLE `users` (
     `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
@@ -9,17 +13,13 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
-DROP TABLE IF EXISTS `comment_sources`;
-
 CREATE TABLE `comment_sources` (
     `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-    `title` varchar(100) NOT NULL
+    `title` varchar(100) NOT NULL,
     `comment_hash` varchar(255) NOT NULL,
     `created_at` datetime NOT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-DROP TABLE IF EXISTS `comments`;
 
 CREATE TABLE `comments` (
     `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
@@ -35,13 +35,9 @@ CREATE TABLE `comments` (
     CONSTRAINT `comments_comment_sources_fk` FOREIGN KEY (`comment_source_id`) REFERENCES `comment_sources` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
-DROP TABLE IF EXISTS `observers`;
-
 CREATE TABLE `observers` (
     `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-    `key` varchar(55) NOT NULL,
-    `priority` int(2) NOT NULL DEFAULT 1,
+    `observer_key` varchar(55) NOT NULL,
     `created_at` datetime DEFAULT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

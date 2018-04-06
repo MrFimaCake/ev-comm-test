@@ -1,17 +1,18 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 namespace CommentApp\Models;
 
 /**
  * Description of Comment
  *
- * @author mrcake
+ * @property int $id
+ * @property int $user_id ID of comment author
+ * @property int $comment_source_id ID of comment source if we'll need 
+ *      more than 1 (ex: comments for different posts)
+ * @property string $body Comment body
+ * @property string $created_at string representation of date and time creation
+ * 
+ * @property User $user
  */
 class Comment extends Model{
     
@@ -33,7 +34,7 @@ class Comment extends Model{
         return $this->user;
     }
     
-    public function attributes() : array
+    public static function attributes() : array
     {
         return ['id', 'user_id', 'comment_source_id', 'body', 'created_at'];
     }

@@ -1,3 +1,9 @@
+<?php
+/**
+ * @var \CommentApp\Response $this
+ * @var \CommentApp\Models\Comment[] $comments
+ */
+?>
 <DOCTYPE html>
 <html>
 <head>

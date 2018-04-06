@@ -1,21 +1,15 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 namespace CommentApp;
 
 use CommentApp\Application;
+use CommentApp\Exceptions\InvalidParamException;
 /**
- * Description of Response
- *
- * @author mrcake
+ * @property Application $app
+ * @property array $headers key-value list of headers
+ * @property array $view view config
  */
 class Response {
-    //put your code here
     
     private $app;
     private $headers = [];
@@ -28,25 +22,44 @@ class Response {
         $this->app = $app;
     }
     
+    /**
+     * @param string $uri where to set Location
+     */
     public function addRedirect($uri)
     {
         $this->headers['Location'] = $uri;
     }
     
+    /**
+     * Return list of headers
+     *
+     * @return array
+     */
+    public function getHeaders()
+    {
+        return $this->headers;
+    }
+    
+    /**
+     * 
+     * @param string $filename - path from ROOT/views directory
+     * @param array $params
+     */
     public function setView($filename, array $params = [])
     {
         $this->view['file']   = realpath(__DIR__ . '/../views/' . $filename);
         $this->view['params'] = $params;
     }
     
+    /**
+     * Send headers and render view
+     */
     public function send()
     {
-        //send headers
         foreach ($this->headers as $key => $value) {
             header("{$key}: {$value}");
         }
         
-        //render view
         $viewFile = $this->view['file'] ?? false;
         
         if ($viewFile) {
@@ -60,19 +73,14 @@ class Response {
             $result = ob_get_clean();
             
             echo $result;
+        } else {
+            throw new InvalidParamException("View file not found");
         }
     }
     
-    public function setFound(bool $found)
-    {
-        $this->found = $found;
-    }
-    
-    public function getFound()
-    {
-        return $this->found;
-    }
-    
+    /**
+     * @return Application
+     */
     public function getApp()
     {
         return $this->app;

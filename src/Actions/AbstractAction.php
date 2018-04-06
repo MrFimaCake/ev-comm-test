@@ -1,32 +1,37 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 namespace CommentApp\Actions;
 
 use CommentApp\Application;
+
 /**
- * Description of AbstractAction
- *
- * @author mrcake
+ * Base class for every standalone action
+ * 
+ * @property Appliction $app provides access to application object
  */
 abstract class AbstractAction {
-    //put your code here
-    private $app;
     
+    private $app;
+
+    /** 
+     * @param Application $app
+     */
     public function __construct(Application $app) {
         $this->app = $app;
     }
     
+    /**
+     * @return Application
+     */
     public function getApp() : Application
     {
         return $this->app;
     }
     
+    /**
+     * Executes logic which for called action was created
+     * 
+     * @return void
+     */
     abstract public function run();
-    
 }

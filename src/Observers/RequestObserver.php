@@ -1,35 +1,30 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 namespace CommentApp\Observers;
 
 use CommentApp\Event;
 use CommentApp\Models\User;
-/**
- * Description of RequestObserver
- *
- * @author mrcake
- */
+
 class RequestObserver {
     //put your code here
     
+    /**
+     * Called on request initiation
+     * 
+     * @param Event $event
+     */
     public function onRequestInit(Event $event)
     {
-        //create user
         /** @var \CommentApp\Request $request */
+        /** @var \CommentApp\Repositories\UserRepository $repo */
+        /** @var \CommentApp\Response $response */
         $request = $event->getSubject();
         $userRepo = $event->getApp()->getRepo(User::class);
         
         if ($request->hasUserCookieHash()
             && $user = $userRepo->getUserByHash($request->getUserCookieHash())) {
             $request->setUser($user);
-        } elseif ($user = $request->createUserFromRequest($event->getApp()->getRepo(User::class))) {
-            
+        } elseif ($request->createUserFromRequest($userRepo)) {
             $response = $event->getApp()->getResponse();
             $response->addRedirect('/');
             $response->send();
@@ -37,5 +32,4 @@ class RequestObserver {
             $request->initGuestUser($request->getUserCookieHash());
         }
     }
-    
 }

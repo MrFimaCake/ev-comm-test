@@ -22,6 +22,7 @@ class Request {
     
     private $cookies;
     private $requestVars;
+    private $serverVars;
     
     private $user;
     
@@ -29,6 +30,11 @@ class Request {
     public function setCookieVars($cookies)
     {
         $this->cookies = $cookies;
+    }
+    
+    public function setServerVars($serverVars)
+    {
+        $this->serverVars = $serverVars;
     }
 
     public function setRequestVars($request)
@@ -93,51 +99,73 @@ class Request {
     
     public function isPost()
     {
-        return $this->requestVars['REQUEST_METHOD'] === 'POST';
+        return $this->serverVars['REQUEST_METHOD'] === 'POST';
     }
     
     public function createUserFromRequest(UserRepository $repo)
     {
-        $postParams = $_POST;
-        if (!isset($postParams['CreateUser'])) {
+        $requestParams = $this->requestVars;
+        if (!isset($requestParams['CreateUser'])) {
             return false;
         }
         
-        if (!isset($postParams['CreateUser']['username'])) {
+        if (!isset($requestParams['CreateUser']['username'])) {
             return false;
         }
         
-        if ($user = $repo->getByUsername($postParams['CreateUser']['username'])) {
+        if ($user = $repo->getByUsername($requestParams['CreateUser']['username'])) {
             $user->setAttribute('user_hash', $this->initUserCookieHash());
             $repo->save($user);
             return $user;
         } else {
-            $user = User::fromArray($postParams['CreateUser']);
+            $user = User::fromArray($requestParams['CreateUser']);
             $user->setAttribute('user_hash', $this->initUserCookieHash());
             return $repo->save($user) ?: false; 
         }
     }
     
-    public static function create()
-    {
+    public static function create(
+        array $cookies = [], 
+        array $requestVars = [],
+        array $serverVars = []
+    ) {
         $self = new self;
-        $self->setCookieVars($_COOKIE);
-        $self->setRequestVars($_REQUEST);
+        $self->setCookieVars(empty($cookies) ? $_COOKIE : $cookies);
+        $self->setRequestVars(empty($requestVars) ? $_REQUEST : $requestVars);
+        $self->setServerVars(empty($serverVars) ? $_SERVER : $serverVars);
         
         return $self;
     }
     
+    /**
+     * Check if current method is allowed by given method(s)
+     * 
+     * @param type $method
+     * @return type
+     */
     public function matchMethod($method)
     {
         $methods = (array)$method;
-        return in_array($_SERVER['REQUEST_METHOD'], $methods);
+        return in_array($this->serverVars['REQUEST_METHOD'], $methods);
     }
     
+    /**
+     * Check if uri matches
+     *
+     * @param type $url
+     * @return type
+     */
     public function matchUrl($url)
     {
-        return strpos($url, $_SERVER['REQUEST_URI']) === 0;
+        return strpos($url, $this->serverVars['REQUEST_URI']) === 0;
     }
     
+    /**
+     * Match params
+     * 
+     * @param array $ruleParams
+     * @return boolean
+     */
     public function matchParams(array $ruleParams)
     {
         $requestParams = $this->requestVars;
