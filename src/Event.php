@@ -1,34 +1,43 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 namespace CommentApp;
 
 /**
- * Description of Event
- *
- * @author mrcake
+ * Keeps all necessary info for triggered event
+ * 
+ * @property Application $app
+ * @property string      $name of event
+ * @property object      $subject
  */
 class Event {
     private $app;
     private $name;
     private $subject;
-    //put your code here
-    public function __construct($subject, $app, $name) {
+    
+    /**
+     * 
+     * @param object $subject which for event was created
+     * @param Application $app
+     * @param string $name of the event
+     */
+    public function __construct($subject, Application $app, string $name) {
         $this->subject = $subject;
         $this->app     = $app;
         $this->name    = $name;
     }
     
+    /**
+     * @return Application
+     */
     public function getApp()
     {
         return $this->app;
     }
     
+    /**
+     * 
+     * @return object
+     */
     public function getSubject()
     {
         return $this->subject;

@@ -5,9 +5,11 @@ namespace CommentApp;
 use ReflectionClass;
 
 /**
- * @property CommentApp\Application $app
- * @property array $observers list of keys for each observer
- * @property array $observerReference list of classes 
+ * Singleton event manager that holds all subject class names and adjusted observers
+ * 
+ * @property Application $app
+ * @property array       $observers list of keys for each observer
+ * @property array       $observerReference list of classes 
  */
 class EventManager {
     
@@ -17,6 +19,9 @@ class EventManager {
     
     private static $selfInstance;
     
+    /**
+     * @param \CommentApp\Application $app
+     */
     private function __construct(Application $app = null) {
         $this->app = $app;
     }

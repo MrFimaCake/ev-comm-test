@@ -1,24 +1,23 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 namespace CommentApp\Repositories;
 
 use CommentApp\EventManager;
 use CommentApp\Models\User;
+
 /**
- * Description of UserRepository
- *
- * @author mrcake
+ * @property string $table
  */
 class UserRepository extends AbstractRepository {
-    //put your code here
+    
     private $table = 'users';
     
+    /**
+     * Insert|update user records
+     *
+     * @param User $user
+     * @return boolean|User
+     */
     public function save(User $user)
     {
         EventManager::triggerEvent('onSave', $user);
@@ -59,6 +58,10 @@ class UserRepository extends AbstractRepository {
         return false;
     }
     
+    /**
+     * @param string $username
+     * @return boolean|User
+     */
     public function getByUsername($username)
     {
         $query = "SELECT id, username, user_hash, created_at FROM `{$this->table}` "
@@ -74,6 +77,10 @@ class UserRepository extends AbstractRepository {
         return false;
     }
     
+    /**
+     * @param string $hash
+     * @return boolean|User
+     */
     public function getUserByHash(string $hash)
     {
         $query = "SELECT id, username, user_hash, created_at FROM `{$this->table}` "

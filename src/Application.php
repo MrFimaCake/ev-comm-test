@@ -1,21 +1,28 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 namespace CommentApp;
 
 use CommentApp\Exceptions\CommentAppException;
 use CommentApp\Exceptions\NotFoundException;
+use CommentApp\Exceptions\ConfigException;
 
+/**
+ * CommentApp application object
+ * 
+ * @property string          $action Class name of run action
+ * @property Config          $config config instance
+ * @property Connection      $connection connection instance
+ * @property ConfigException $exception if something is wrong on app creation
+ * @property Request         $request
+ * @property Response        $response
+ */
 class Application {
 
     private $action;
     private $config;
     private $connection;
+    
+    private $exception;
     
     private $request;
     private $response;
@@ -23,10 +30,17 @@ class Application {
     public function __construct(Config $config) {
         
         $this->config = $config;
-        $this->connection = new Connection($this->config);
+        try{
+            $this->connection = new Connection($this->config);
+            
+            EventManager::initEventManager($this);
+            EventManager::triggerEvent('initApp', $this);
+            
+        } catch (ConfigException $e) {
+            $this->exception = $e;
+        }
         
-        EventManager::initEventManager($this);
-        EventManager::triggerEvent('initApp', $this);
+        
     }
     
     /**
@@ -35,7 +49,16 @@ class Application {
      */
     public function createResponse(Request $request) : Response
     {
+        
         $response = new Response($this);
+        
+        if ($this->exception) {
+            $response->setView('error.php', [
+                'errorMessage' => $this->exception->getMessage()
+            ]);
+            return $response;
+        }
+        
         try {
             $this->response = $response;
             $this->request = $request;
@@ -98,21 +121,35 @@ class Application {
         return $this->request->getUser();
     }
     
+    /**
+     * @return Request
+     */
     public function getRequest()
     {
         return $this->request;
     }
     
+    /**
+     * @return Response
+     */
     public function getResponse()
     {
         return $this->response;
     }
     
+    /**
+     * Class name of action selected by route matching
+     * 
+     * @param string $action
+     */
     public function setAction($action)
     {
         $this->action = $action;
     }
     
+    /**
+     * @return string
+     */
     public function getAction()
     {
         return $this->action;
