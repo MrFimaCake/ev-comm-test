@@ -27,6 +27,9 @@ class Application {
     private $request;
     private $response;
     
+    /**
+     * @param \CommentApp\Config $config
+     */
     public function __construct(Config $config) {
         
         $this->config = $config;

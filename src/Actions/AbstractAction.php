@@ -7,7 +7,7 @@ use CommentApp\Application;
 /**
  * Base class for every standalone action
  * 
- * @property Appliction $app provides access to application object
+ * @property Application $app provides access to application object
  */
 abstract class AbstractAction {
     
