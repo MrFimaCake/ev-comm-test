@@ -1,10 +1,6 @@
 <?php
 
 return [
-    'app_user' => [
-        'class'   => CommentApp\Observers\ApplicationUserObserver::class,
-        'subject' => CommentApp\Application::class,
-    ],
     'request'  => [
         'class'   => CommentApp\Observers\RequestObserver::class,
         'subject' => CommentApp\Request::class,
