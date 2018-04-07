@@ -1,5 +1,7 @@
 <?php
-
+/**
+ * Inits settings all available observers to db table
+ */
 require_once __DIR__ . '/vendor/autoload.php';
 
 $config = new \CommentApp\Config(realpath(__DIR__));
